@@ -88,10 +88,34 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS pegawai (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nama VARCHAR(100) NOT NULL,
+  email VARCHAR(150) NOT NULL,
+  phone VARCHAR(30) NOT NULL,
+  alamat VARCHAR(255) NULL,
+  tanggal_lahir DATE NULL,
+  jenis_kelamin VARCHAR(10) NULL,
   jabatan VARCHAR(100) NOT NULL,
+  departemen VARCHAR(100) NOT NULL,
   gaji INT NOT NULL,
+  tanggal_masuk DATE NOT NULL,
+  status_karyawan VARCHAR(30) NOT NULL,
+  foto_url VARCHAR(255) NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+```
+
+Jika Anda sudah memiliki tabel `pegawai` lama, gunakan ALTER sebagai berikut:
+
+```sql
+ALTER TABLE pegawai
+  ADD COLUMN email VARCHAR(150) NOT NULL AFTER nama,
+  ADD COLUMN phone VARCHAR(30) NOT NULL AFTER email,
+  ADD COLUMN alamat VARCHAR(255) NULL AFTER phone,
+  ADD COLUMN tanggal_lahir DATE NULL AFTER alamat,
+  ADD COLUMN jenis_kelamin VARCHAR(10) NULL AFTER tanggal_lahir,
+  ADD COLUMN departemen VARCHAR(100) NOT NULL AFTER jabatan,
+  ADD COLUMN tanggal_masuk DATE NOT NULL AFTER gaji,
+  ADD COLUMN status_karyawan VARCHAR(30) NOT NULL AFTER tanggal_masuk,
+  ADD COLUMN foto_url VARCHAR(255) NULL AFTER status_karyawan;
 ```
 
 ---
@@ -126,17 +150,58 @@ Pegawai:
     ```json
     {
       "status": "success",
-      "data": [{ "id": 1, "nama": "A", "jabatan": "B", "gaji": 1000 }]
+      "data": [
+        {
+          "id": 1,
+          "nama": "A",
+          "email": "a@mail.com",
+          "phone": "+62...",
+          "alamat": "Jl. ...",
+          "tanggal_lahir": "1995-01-01",
+          "jenis_kelamin": "L",
+          "jabatan": "B",
+          "departemen": "HR",
+          "gaji": 1000000,
+          "tanggal_masuk": "2024-01-01",
+          "status_karyawan": "tetap",
+          "foto_url": "https://.../foto.jpg"
+        }
+      ]
     }
     ```
 
 - POST `/pegawai/add`
 
-  - Body JSON: `{ "nama": string, "jabatan": string, "gaji": number }`
+  - Body JSON:
+    ```json
+    {
+      "nama": "Andi",
+      "email": "andi@mail.com",
+      "phone": "+62812...",
+      "alamat": "Jl. Melati No. 1",
+      "tanggal_lahir": "1998-03-21",
+      "jenis_kelamin": "L",
+      "jabatan": "Staff",
+      "departemen": "Keuangan",
+      "gaji": 5000000,
+      "tanggal_masuk": "2024-09-01",
+      "status_karyawan": "kontrak",
+      "foto_url": "https://cdn.example.com/andi.jpg"
+    }
+    ```
 
 - PUT atau POST `/pegawai/edit`
 
-  - Body JSON: `{ "id": number, "nama": string, "jabatan": string, "gaji": number }`
+  - Body JSON (opsional selain `id`, kirim field yang ingin diubah saja):
+    ```json
+    {
+      "id": 1,
+      "email": "andi.baru@mail.com",
+      "departemen": "Operasional",
+      "gaji": 6000000,
+      "foto_url": "https://cdn.example.com/andi-new.jpg"
+    }
+    ```
 
 - DELETE atau POST `/pegawai/delete`
   - Body JSON: `{ "id": number }`
